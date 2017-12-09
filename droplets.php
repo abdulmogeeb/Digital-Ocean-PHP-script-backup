@@ -1,7 +1,7 @@
 <?php
 
 // Created by: Abdulmogeeb AlHumaid - abdulmogeeb@gmail.com
-// licence: nothings, just use it and enjoy it.
+// licence: nothing, just use it and enjoy it.
 
 function token(){
     return 'TOKEN HERE';

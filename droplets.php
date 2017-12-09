@@ -4,12 +4,19 @@
 // licence: nothings, just use it and enjoy it.
 
 function token(){
-    return 'YOUR TOKEN HERE';
+    return 'TOKEN HERE';
 }
 
+
+// use a specific tag to snapshot a droplet
+function tagName(){
+    return 'TAG NAME HERE';
+}
+
+// list all droplets with a specified tag @ tagName()
 function listDroplets()
 {
-    $ch = curl_init('https://api.digitalocean.com/v2/droplets?tag_name=hosting');
+    $ch = curl_init('https://api.digitalocean.com/v2/droplets?tag_name='.tagName());
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -20,6 +27,7 @@ function listDroplets()
     return $results;
 }
 
+// list all snapshots with type droplet
 function listSnapshots(){
     $ch = curl_init('https://api.digitalocean.com/v2/snapshots?resource_type=droplet');
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -32,7 +40,7 @@ function listSnapshots(){
     return $results;
 }
 
-
+// snap a droplet by id
 function snap($droplet_id){
     $data = json_encode(['type' => 'snapshot']);
     $ch = curl_init('https://api.digitalocean.com/v2/droplets/'.$droplet_id.'/actions');
@@ -47,7 +55,7 @@ function snap($droplet_id){
     return $results;
 }
 
-
+// delete a snap by id
 function deleteSnap($snap_id){
     $ch = curl_init('https://api.digitalocean.com/v2/snapshots/'.$snap_id);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -64,6 +72,7 @@ $droplets = listDroplets();
 
 $snaps = listSnapshots();
 
+// loop throw snapshots and check if they are older than 7 days and not Friday, they will be deleted.
 if($snaps){
     foreach ($snaps->snapshots as $snap){
         $snap_day = date('D', strtotime($snap->created_at));
@@ -78,7 +87,7 @@ if($snaps){
 }
 
 
-
+// now find droplets and back them up.
 foreach($droplets->droplets as $droplet){
     echo "\n \n Droplet: $droplet->name is being backed up now \n \n";
     snap($droplet->id);
